@@ -36,7 +36,7 @@
         .toast { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
         
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; width: 20px; height: 20px; display: inline-block; }
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; width: 18px; height: 18px; display: inline-block; }
         .spinner-blue { border: 3px solid rgba(59,130,246,0.3); border-top-color: #3b82f6; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
@@ -46,6 +46,7 @@
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 h-screen flex overflow-hidden">
 
+    <!-- Sidebar Navigation -->
     <aside class="w-64 bg-white dark:bg-darkCard border-r border-gray-200 dark:border-darkBorder flex flex-col justify-between hidden md:flex transition-colors duration-300">
         <div>
             <div class="h-16 flex items-center px-6 border-b border-gray-200 dark:border-darkBorder">
@@ -60,7 +61,7 @@
                     <i class="fa-solid fa-users w-6"></i> Alumni Directory
                 </button>
                 <button onclick="switchTab('ai-tools')" id="nav-ai-tools" class="nav-btn w-full flex items-center px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-darkBorder transition-colors">
-                    <i class="fa-solid fa-robot w-6 text-purple-500"></i> AI Tools
+                    <i class="fa-solid fa-robot w-6 text-purple-500"></i> AI Tools & LinkedIn
                 </button>
             </nav>
         </div>
@@ -71,6 +72,7 @@
         </div>
     </aside>
 
+    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
         <header class="h-16 bg-white dark:bg-darkCard border-b border-gray-200 dark:border-darkBorder flex items-center justify-between px-4 sm:px-6 z-10 transition-colors duration-300">
             <div class="flex items-center md:hidden">
@@ -81,6 +83,9 @@
                 <i class="fa-solid fa-database mr-2 text-primary-500"></i> <span id="total-records-badge">0 Records</span>
             </div>
             <div class="flex items-center space-x-3">
+                <button onclick="openParserModal()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Profile Extractor
+                </button>
                 <button onclick="exportData()" class="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded transition-colors" title="Export CSV">
                     <i class="fa-solid fa-download"></i>
                 </button>
@@ -123,11 +128,11 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-darkCard rounded-xl p-5 shadow-sm border border-gray-100 dark:border-darkBorder">
-                        <h3 class="text-lg font-semibold mb-4">Top Companies</h3>
+                        <h3 class="text-lg font-semibold mb-4">Top Employers</h3>
                         <div class="relative h-64"><canvas id="companiesChart"></canvas></div>
                     </div>
                     <div class="bg-white dark:bg-darkCard rounded-xl p-5 shadow-sm border border-gray-100 dark:border-darkBorder">
-                        <h3 class="text-lg font-semibold mb-4">Alumni by Sector</h3>
+                        <h3 class="text-lg font-semibold mb-4">Alumni by Industry Sector</h3>
                         <div class="relative h-64"><canvas id="sectorsChart"></canvas></div>
                     </div>
                     <div class="bg-white dark:bg-darkCard rounded-xl p-5 shadow-sm border border-gray-100 dark:border-darkBorder lg:col-span-2">
@@ -137,12 +142,18 @@
                 </div>
             </div>
 
+            <!-- Directory Tab -->
             <div id="directory" class="tab-content">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <h1 class="text-2xl font-bold">Alumni Directory</h1>
-                    <button onclick="openModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                        <i class="fa-solid fa-plus mr-1"></i> Add Alumni
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openParserModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Profile Import
+                        </button>
+                        <button onclick="openModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Alumni
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder flex flex-col">
@@ -171,11 +182,12 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer" onclick="handleSort('role')">Role <i class="fa-solid fa-sort ml-1"></i></th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer" onclick="handleSort('company')">Company <i class="fa-solid fa-sort ml-1"></i></th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer" onclick="handleSort('location')">Location <i class="fa-solid fa-sort ml-1"></i></th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">LinkedIn</th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="bg-white dark:bg-darkCard divide-y divide-gray-200 dark:divide-darkBorder">
-                                <!-- Rows generated by JS -->
+                                <!-- Dynamic rows -->
                             </tbody>
                         </table>
                     </div>
@@ -207,51 +219,67 @@
                 </div>
             </div>
 
+            <!-- AI Tools Tab -->
             <div id="ai-tools" class="tab-content max-w-4xl mx-auto">
-                <div class="flex items-center space-x-3 mb-6">
-                    <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600">Gemini AI Assistant</h1>
-                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300 border border-purple-400">Beta</span>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600">Gemini AI Suite</h1>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300 border border-purple-400">Netlify Serverless Ready</span>
+                    </div>
                 </div>
                 
                 <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-6 mb-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gemini API Key (Optional for Real AI)</label>
-                    <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 mb-2 dark:bg-gray-800 dark:text-white focus:ring-purple-500 focus:border-purple-500">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">If left blank, the system uses a simulated mock response.</p>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Direct Gemini API Key (Optional Override)</label>
+                    <input type="password" id="gemini-api-key" placeholder="AIzaSy... (Leave blank to use Netlify Serverless Function)" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white focus:ring-purple-500 focus:border-purple-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">If left blank, queries process safely via your Netlify backend function (`/.netlify/functions/gemini`).</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Extractor Tool Card -->
                     <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-6 flex flex-col">
-                        <h3 class="text-lg font-semibold mb-2"><i class="fa-solid fa-file-lines text-purple-500 mr-2"></i> Profile Extractor</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Paste raw text from LinkedIn or a resume. AI formats it to JSON.</p>
-                        <textarea id="ai-raw-text" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm p-3 mb-4 dark:bg-gray-800 dark:text-white resize-none" placeholder="Paste text here..."></textarea>
-                        <button onclick="runAIExtractor()" id="btn-extract" class="mt-auto w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors">
-                            <span id="btn-extract-text">Extract Data</span>
+                        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
+                            <i class="fa-brands fa-linkedin text-blue-600 text-xl"></i> LinkedIn Profile Extractor
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Paste raw text from a LinkedIn profile or resume. Gemini will structure it into clean JSON data.</p>
+                        <textarea id="ai-raw-text" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm p-3 mb-4 dark:bg-gray-800 dark:text-white resize-none" placeholder="Paste LinkedIn profile bio, work experience, or resume text here..."></textarea>
+                        <button onclick="runAIExtractor()" id="btn-extract" class="mt-auto w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                            <span id="btn-extract-text">Extract JSON Data</span>
                         </button>
                     </div>
 
+                    <!-- Outreach Tool Card -->
                     <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-6 flex flex-col">
-                        <h3 class="text-lg font-semibold mb-2"><i class="fa-solid fa-envelope text-indigo-500 mr-2"></i> Outreach Generator</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Draft personalized emails for networking, referrals, or guest lectures.</p>
+                        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-indigo-500"></i> Outreach Generator
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Draft personalized LinkedIn connection requests (<300 chars) or networking emails for HBTU seniors.</p>
                         <div class="space-y-3 mb-4">
-                            <input type="text" id="ai-target-name" placeholder="Target Name" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
-                            <input type="text" id="ai-purpose" placeholder="Purpose (e.g. Job Referral)" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                            <input type="text" id="ai-target-name" placeholder="Target Alumnus Name (e.g. Rahul Sharma)" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                            <input type="text" id="ai-purpose" placeholder="Purpose (e.g., Mentorship, Job Referral)" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                            <select id="ai-outreach-type" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                                <option value="linkedin">LinkedIn Connection Note (<280 chars)</option>
+                                <option value="email">Formal Outreach Email</option>
+                            </select>
                         </div>
-                        <button onclick="runAIGenerator()" id="btn-generate" class="mt-auto w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition-colors">
-                            <span id="btn-generate-text">Generate Email</span>
+                        <button onclick="runAIGenerator()" id="btn-generate" class="mt-auto w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                            <span id="btn-generate-text">Generate Message</span>
                         </button>
                     </div>
                 </div>
 
                 <div id="ai-output-container" class="hidden mt-6 bg-gray-900 rounded-xl p-6 shadow-inner relative group">
-                    <button onclick="copyAIOutput()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-regular fa-copy"></i></button>
-                    <h4 class="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-3">AI Output</h4>
-                    <pre id="ai-output-text" class="text-gray-100 text-sm whitespace-pre-wrap font-mono overflow-x-auto"></pre>
+                    <button onclick="copyAIOutput()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2" title="Copy to Clipboard">
+                        <i class="fa-regular fa-copy text-lg"></i>
+                    </button>
+                    <h4 class="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-3">Generated AI Result</h4>
+                    <pre id="ai-output-text" class="text-gray-100 text-sm whitespace-pre-wrap font-mono overflow-x-auto max-h-80"></pre>
                 </div>
             </div>
 
         </div>
     </main>
 
+    <!-- CRUD Modal (Add / Edit Alumni) -->
     <div id="crud-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm hidden items-center justify-center z-[60] opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-darkCard rounded-xl shadow-xl w-full max-w-lg mx-4 transform scale-95 transition-transform duration-300" id="crud-modal-content">
             <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-darkBorder">
@@ -285,6 +313,10 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
                         <input type="text" id="form-location" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
                     </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">LinkedIn Profile URL</label>
+                        <input type="url" id="form-linkedin" placeholder="https://www.linkedin.com/in/username" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
@@ -294,6 +326,75 @@
         </div>
     </div>
 
+    <!-- LinkedIn & Resume Parser Modal -->
+    <div id="linkedInParserModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-darkCard rounded-xl shadow-2xl max-w-2xl w-full mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="linkedInParserModalContent">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-5 text-white flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI LinkedIn & Resume Profile Extractor
+                </h3>
+                <button onclick="closeParserModal()" class="text-white hover:text-gray-200 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    Copy and paste raw text from an alumnus's LinkedIn profile page or resume below. Gemini will automatically extract fields and import them into your database.
+                </p>
+
+                <textarea id="modalRawProfileInput" rows="7" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white font-mono resize-none" placeholder="Paste raw text here (e.g., Name, Education at HBTU, Experience at Tata Chemicals, Designation, Location)..."></textarea>
+
+                <div class="flex justify-end gap-3 mt-5">
+                    <button onclick="closeParserModal()" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Cancel</button>
+                    <button onclick="handleModalProfileExtraction()" id="modalExtractBtn" class="px-5 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg flex items-center gap-2 shadow-sm transition-colors">
+                        <span id="modalExtractBtnText">Extract & Import Record</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick LinkedIn Connection Request Modal -->
+    <div id="linkedInOutreachModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-darkCard rounded-xl shadow-2xl max-w-lg w-full mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="linkedInOutreachModalContent">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 text-white flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fa-brands fa-linkedin text-xl"></i> Quick LinkedIn Outreach Note
+                </h3>
+                <button onclick="closeOutreachModal()" class="text-white hover:text-gray-200 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
+                    <div id="outreachTargetInfo" class="font-bold text-gray-900 dark:text-white text-sm">Target Alumnus</div>
+                    <div id="outreachTargetSub" class="text-xs text-gray-600 dark:text-gray-300">Company & Role</div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Outreach Goal</label>
+                    <select id="modalOutreachGoal" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white">
+                        <option value="mentorship">Mentorship & Career Advice</option>
+                        <option value="job referral">Job Referral Inquiry</option>
+                        <option value="campus event">Guest Speaker / Event Invitation</option>
+                        <option value="industry insight">Industry / Process Engineering Insights</option>
+                    </select>
+                </div>
+
+                <button onclick="generateModalOutreachNote()" id="btnGenerateModalNote" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                    <span id="btnGenerateModalNoteText">Generate Connection Note</span>
+                </button>
+
+                <div id="outreachNoteResultContainer" class="hidden">
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Generated Note (<300 Chars)</label>
+                    <div class="relative">
+                        <textarea id="outreachNoteResult" rows="4" readonly class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-xs dark:bg-gray-900 dark:text-gray-100 font-mono resize-none"></textarea>
+                        <button onclick="copyToClip('outreachNoteResult')" class="absolute top-2 right-2 px-2.5 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Enrichment Modal (Apollo.io) -->
     <div id="enrich-modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-darkCard rounded-xl shadow-2xl w-full max-w-md mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="enrich-modal-content">
             <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-6 text-white flex justify-between items-start">
@@ -366,15 +467,12 @@
         let rowsPerPage = 50;
         let currentSort = { column: 'batch', order: 'desc' };
         let charts = { companies: null, sectors: null, batches: null };
+        let currentOutreachTarget = null;
 
-        // Extensive Name Lists for variation
+        // Names & Companies Data
         const GEN_FIRST_NAMES = ["Aarav", "Aditi", "Rahul", "Priya", "Vikram", "Sneha", "Rohan", "Neha", "Amit", "Kavita", "Siddharth", "Anjali", "Karan", "Pooja", "Arjun", "Riya", "Mohit", "Shreya", "Nitin", "Divya", "Suresh", "Meera", "Raj", "Swati", "Ashish", "Manish", "Preeti", "Gaurav", "Nisha", "Ravi", "Ananya", "Sachin", "Tanvi", "Vishal", "Sonali"];
         const GEN_LAST_NAMES = ["Sharma", "Singh", "Gupta", "Verma", "Patel", "Kumar", "Mishra", "Pandey", "Yadav", "Jain", "Tiwari", "Reddy", "Rao", "Chauhan", "Bhatia", "Srivastava", "Das", "Agarwal", "Saxena", "Choudhury", "Joshi", "Nair", "Desai", "Mehta", "Bansal"];
-        
-        // Exact 202 Company Array provided by user
         const GEN_COMPANIES = ["Reliance Industries", "Tata Chemicals", "UPL Limited", "Pidilite Industries", "Aarti Industries", "SRF Limited", "Deepak Nitrite", "Gujarat Alkalies & Chemicals (GACL)", "Gujarat Narmada Valley Fertilizers (GNFC)", "Atul Ltd", "Navin Fluorine International", "Camlin Fine Sciences", "Vinati Organics", "BASF India", "Dow Chemical International", "DuPont India", "LANXESS India", "Huntsman International (India)", "Clariant Chemicals India", "Solvay Specialities India", "Evonik India", "Covestro India", "Arkema Chemicals India", "SABIC India", "Dorf Ketal Chemicals", "Galaxy Surfactants", "Sudarshan Chemical Industries", "Meghmani Organics", "Bodal Chemicals", "NOCIL Limited", "India Glycols", "Thirumalai Chemicals", "Alkyl Amines Chemicals", "Balaji Amines", "Jubilant Ingrevia", "Laxmi Organic Industries", "Chemplast Sanmar", "PCBL (Phillips Carbon Black)", "Godrej Industries (Chemicals)", "Kanoria Chemicals & Industries", "Haldia Petrochemicals", "Indian Oil Corporation (IOCL)", "Bharat Petroleum (BPCL)", "Hindustan Petroleum (HPCL)", "ONGC Petro additions (OPaL)", "Nayara Energy", "Chennai Petroleum (CPCL)", "Mangalore Refinery & Petrochemicals (MRPL)", "GAIL (India) Limited", "Indraprastha Gas Limited (IGL)", "Mahanagar Gas Limited (MGL)", "Gujarat Gas", "Adani Total Gas", "Honeywell Automation India", "Yokogawa India", "Emerson Electric", "Siemens Ltd", "ABB India", "Schneider Electric", "Rockwell Automation", "Endress+Hauser", "WIKA India", "Fuji Electric", "VEGA India", "KROHNE Marshall", "Forbes Marshall", "L&T Technology Services (LTTS)", "TCS (Engineering & Industrial Services)", "Infosys (Engineering Services)", "Wipro (Engineering & R&D)", "HCLTech (Engineering and R&D)", "Tech Mahindra (Engineering)", "Cognizant (IoT & Engineering)", "Capgemini (Engineering)", "Cyient", "Tata Elxsi", "KPIT Technologies", "Quest Global", "Tata Consulting Engineers (TCE)", "Jacobs Engineering India", "Worley India", "Fluor Daniel India", "Technip Energies", "L&T Hydrocarbon Engineering", "Toyo Engineering India", "Thyssenkrupp Industrial Solutions", "Uhde India", "Tractebel Engineering", "Mott MacDonald", "Aker Solutions", "Samsung Engineering India", "Wood (formerly Amec Foster Wheeler)", "KBR India", "Bechtel India", "Petrofac Engineering India", "Black & Veatch", "Hatch India", "Saipem India", "Tecnimont Private Limited", "Tata Projects", "Larsen & Toubro (L&T Construction)", "Afcons Infrastructure", "Kalpataru Projects International", "KEC International", "NCC Limited", "Shapoorji Pallonji", "JMC Projects", "Hindustan Construction Company (HCC)", "Biocon", "Serum Institute of India", "Bharat Biotech", "Panacea Biotec", "Biological E", "Dr. Reddy's Laboratories", "Sun Pharmaceutical Industries", "Cipla", "Lupin", "Aurobindo Pharma", "Zydus Lifesciences", "Torrent Pharmaceuticals", "Divi's Laboratories", "Alkem Laboratories", "Intas Pharmaceuticals", "Mankind Pharma", "Glenmark Pharmaceuticals", "Torrent Pharma", "Wockhardt", "Piramal Pharma", "Syngene International", "Jubilant Pharmova", "Granules India", "Strides Pharma Science", "Shilpa Medicare", "Novartis India", "Pfizer India", "GlaxoSmithKline (GSK) India", "Sanofi India", "Abbott India", "AstraZeneca India", "Johnson & Johnson India", "Bayer CropScience", "Syngenta India", "PI Industries", "Rallis India", "Coromandel International", "Chambal Fertilisers and Chemicals", "National Fertilizers Limited (NFL)", "Rashtriya Chemicals & Fertilizers (RCF)", "Deepak Fertilisers & Petrochemicals", "GSFC (Gujarat State Fertilizers & Chemicals)", "FACT (Fertilisers and Chemicals Travancore)", "IFFCO", "KRIBHCO", "Tata Consumer Products", "Hindustan Unilever (HUL)", "ITC Limited", "Nestlé India", "Britannia Industries", "Marico", "Dabur India", "Godrej Consumer Products", "Amul (GCMMF)", "Parle Products", "Mother Dairy", "Pepsico India", "Coca-Cola India", "Mondelez India", "Diageo India (United Spirits)", "Pernod Ricard India", "Radico Khaitan", "Allied Blenders & Distillers", "Carlsberg India", "AB InBev India", "United Breweries (UB Group)", "Bikanervala", "Haldiram's", "Balrampur Chini Mills", "Triveni Engineering & Industries", "Dhampur Sugar Mills", "Shree Renuka Sugars", "E.I.D.- Parry (India)", "Dalmia Bharat Sugar and Industries", "Avadh Sugar & Energy", "Dwarikesh Sugar Industries", "Uttam Sugar Mills", "Praj Industries", "Thermax", "Ion Exchange", "VA Tech Wabag", "L&T Water & Effluent Treatment", "Suez Water Technologies", "Veolia Water Technologies", "Ecolab India", "Xylem Water Solutions", "Grundfos Pumps India", "KSB Limited", "Kirloskar Brothers", "Sulzer India", "Flowserve India", "Atlas Copco India", "Ingersoll Rand India", "Elgi Equipments", "Alfa Laval India", "GEA Process Engineering", "SPX Flow", "Pall Corporation", "Sartorius", "MilliporeSigma (Merck)", "Cytiva (formerly GE Healthcare Life Sciences)", "Eppendorf India", "Thermo Fisher Scientific", "Agilent Technologies", "Waters Corporation", "PerkinElmer"];
-
-        // Roles appropriate for these industries
         const GEN_ROLES = ["Process Engineer", "Automation Engineer", "Plant Head", "R&D Scientist", "EHS Manager", "Quality Control Analyst", "Project Manager", "Operations Head", "Control Systems Engineer", "Biochemical Engineer", "Production Manager", "Process Safety Engineer", "Instrumentation Engineer", "Supply Chain Manager", "Technical Consultant"];
         const GEN_LOCATIONS = ["Kanpur", "Pune", "Bangalore", "Delhi NCR", "Mumbai", "Hyderabad", "Houston, TX", "London, UK", "Singapore", "Dubai", "Ahmedabad", "Chennai", "Vadodara"];
 
@@ -397,12 +495,9 @@
             for (let i = 1; i <= 1050; i++) {
                 const fname = GEN_FIRST_NAMES[Math.floor(Math.random() * GEN_FIRST_NAMES.length)];
                 const lname = GEN_LAST_NAMES[Math.floor(Math.random() * GEN_LAST_NAMES.length)];
-                
-                // Pick a company randomly from the extensive 202 list
                 const companyName = GEN_COMPANIES[Math.floor(Math.random() * GEN_COMPANIES.length)];
                 const sector = getSectorFromCompany(companyName);
                 
-                // Generate realistic batches (skewed slightly recent)
                 const batchWeights = Array.from({length: 36}, (_, i) => ({ year: 1990 + i, weight: Math.pow(1.1, i) }));
                 let sum = batchWeights.reduce((acc, el) => acc + el.weight, 0);
                 let rand = Math.random() * sum;
@@ -416,7 +511,8 @@
                     company: companyName,
                     role: GEN_ROLES[Math.floor(Math.random() * GEN_ROLES.length)],
                     sector: sector,
-                    location: GEN_LOCATIONS[Math.floor(Math.random() * GEN_LOCATIONS.length)]
+                    location: GEN_LOCATIONS[Math.floor(Math.random() * GEN_LOCATIONS.length)],
+                    linkedInUrl: "" // Left blank so smart generator triggers by default
                 });
             }
             return data;
@@ -431,14 +527,14 @@
                 updateThemeUI(false);
             }
 
-            const storedData = localStorage.getItem('hbtu_alumni_data_v2'); // updated key to force fresh generation
+            const storedData = localStorage.getItem('hbtu_alumni_data_v3');
             if (storedData) {
                 try { alumniData = JSON.parse(storedData); } 
                 catch(e) { alumniData = generateSyntheticData(); saveToLocal(); }
             } else {
                 alumniData = generateSyntheticData();
                 saveToLocal();
-                showToast("Generated 1,050 records across 202 Top Companies.", "success");
+                showToast("Initialized tracker with 1,050 alumni records.", "success");
             }
             
             if(localStorage.getItem('apollo_api_key')) document.getElementById('apollo-api-key').value = localStorage.getItem('apollo_api_key');
@@ -452,7 +548,7 @@
         }
 
         function saveToLocal() {
-            localStorage.setItem('hbtu_alumni_data_v2', JSON.stringify(alumniData));
+            localStorage.setItem('hbtu_alumni_data_v3', JSON.stringify(alumniData));
             document.getElementById('total-records-badge').innerText = `${alumniData.length} Records`;
         }
 
@@ -538,6 +634,25 @@
             renderTable();
         }
 
+        // LinkedIn Search URL Helper
+        function getLinkedInSearchURL(name, company = '') {
+            const query = encodeURIComponent(`site:linkedin.com/in/ "${name}" "HBTU" OR "Harcourt Butler" ${company}`);
+            return `https://www.google.com/search?q=${query}`;
+        }
+
+        function renderLinkedInButton(item) {
+            if (item.linkedInUrl && item.linkedInUrl.includes('linkedin.com')) {
+                return `<a href="${item.linkedInUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium inline-flex items-center gap-1 transition-colors" title="Open LinkedIn Profile">
+                            <i class="fa-brands fa-linkedin"></i> Profile
+                        </a>`;
+            } else {
+                const searchUrl = getLinkedInSearchURL(item.name, item.company);
+                return `<a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded text-xs font-medium inline-flex items-center gap-1 transition-colors" title="Find Profile on LinkedIn">
+                            <i class="fa-solid fa-magnifying-glass"></i> Find
+                        </a>`;
+            }
+        }
+
         function renderTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
@@ -546,7 +661,7 @@
             const pageData = filteredData.slice(startIdx, endIdx);
 
             if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No alumni records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-500">No alumni records found.</td></tr>`;
             } else {
                 pageData.forEach(item => {
                     const tr = document.createElement('tr');
@@ -560,10 +675,12 @@
                             <span class="px-2 py-1 inline-flex text-xs leading-4 font-semibold rounded-md bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800 truncate max-w-[150px] sm:max-w-[200px]" title="${item.company}">${item.company}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><i class="fa-solid fa-location-dot mr-1 text-gray-400"></i> ${item.location || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">${renderLinkedInButton(item)}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="openEnrichModal('${item.id}')" title="Enrich Contact Info" class="text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 mr-3 opacity-70 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-                            <button onclick="editAlumni('${item.id}')" title="Edit" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3 opacity-70 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteAlumni('${item.id}')" title="Delete" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 opacity-70 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openOutreachModal('${item.id}')" title="Quick Outreach Note" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 mr-2.5 opacity-80 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-paper-plane"></i></button>
+                            <button onclick="openEnrichModal('${item.id}')" title="Enrich Contact Info" class="text-amber-500 hover:text-amber-700 dark:text-amber-400 mr-2.5 opacity-80 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                            <button onclick="editAlumni('${item.id}')" title="Edit" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-2.5 opacity-80 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteAlumni('${item.id}')" title="Delete" class="text-red-600 hover:text-red-900 dark:text-red-400 opacity-80 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -604,7 +721,6 @@
                 batchCount[a.batch] = (batchCount[a.batch] || 0) + 1;
             });
 
-            // Since there are 200 companies, only show top 10 in chart
             const sortedComps = Object.entries(compCount).sort((a, b) => b[1] - a[1]).slice(0, 10);
             const sortedSectors = Object.entries(sectorCount).sort((a, b) => b[1] - a[1]).slice(0, 7);
             const sortedBatches = Object.entries(batchCount).sort((a, b) => a[0] - b[0]);
@@ -631,6 +747,7 @@
             });
         }
 
+        // CRUD Modal Functions
         function openModal(id = null) {
             const modal = document.getElementById('crud-modal'), content = document.getElementById('crud-modal-content');
             modal.classList.remove('hidden'); modal.classList.add('flex');
@@ -640,8 +757,9 @@
                 const item = alumniData.find(a => a.id === id);
                 if (item) {
                     document.getElementById('modal-title').innerText = 'Edit Alumni';
-                    ['id','name','batch','company','role','sector','location'].forEach(k => {
-                        if(document.getElementById(`form-${k}`)) document.getElementById(`form-${k}`).value = item[k] || '';
+                    ['id','name','batch','company','role','sector','location','linkedin'].forEach(k => {
+                        const targetId = k === 'linkedin' ? 'form-linkedin' : `form-${k}`;
+                        if(document.getElementById(targetId)) document.getElementById(targetId).value = (k === 'linkedin' ? item.linkedInUrl : item[k]) || '';
                     });
                 }
             }
@@ -662,7 +780,8 @@
                 name: document.getElementById('form-name').value, batch: parseInt(document.getElementById('form-batch').value),
                 company: document.getElementById('form-company').value, role: document.getElementById('form-role').value,
                 sector: document.getElementById('form-sector').value || getSectorFromCompany(document.getElementById('form-company').value),
-                location: document.getElementById('form-location').value
+                location: document.getElementById('form-location').value,
+                linkedInUrl: document.getElementById('form-linkedin').value
             };
 
             if (id) {
@@ -692,7 +811,7 @@
         }
         
         function exportData() {
-            const headers = ['id', 'name', 'batch', 'role', 'company', 'sector', 'location'];
+            const headers = ['id', 'name', 'batch', 'role', 'company', 'sector', 'location', 'linkedInUrl'];
             const csvRows = [headers.join(',')];
             alumniData.forEach(row => {
                 const values = headers.map(header => `"${String(row[header] || '').replace(/"/g, '""')}"`);
@@ -731,48 +850,212 @@
             };
             reader.readAsText(file);
         }
-        // Inside index.html
-       async function generateAIContent(userPrompt) {
-         const response = await fetch('/api/gemini', {
-          method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ prompt: userPrompt })
-        });
-  
-  const data = await response.json();
-  return data.candidates[0].content.parts[0].text;
-}
 
-        function showAIOutput(text) { document.getElementById('ai-output-container').classList.remove('hidden'); document.getElementById('ai-output-text').innerText = text; }
+        // Unified Gemini Serverless & Direct API Call Helper
+        async function callGeminiAPI(promptText) {
+            const userApiKey = document.getElementById('gemini-api-key').value.trim();
+            if (userApiKey) {
+                // Direct client API call if key provided
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${userApiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                });
+                if (!response.ok) throw new Error(`Gemini direct call failed: ${response.status}`);
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                // Netlify Serverless Backend Call
+                const response = await fetch('/.netlify/functions/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: promptText })
+                });
+                if (!response.ok) throw new Error(`Netlify function returned status: ${response.status}`);
+                const data = await response.json();
+                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    return data.candidates[0].content.parts[0].text;
+                } else if (data.text) {
+                    return data.text;
+                } else {
+                    throw new Error("Invalid format received from Netlify function.");
+                }
+            }
+        }
 
+        function showAIOutput(text) { 
+            document.getElementById('ai-output-container').classList.remove('hidden'); 
+            document.getElementById('ai-output-text').innerText = text; 
+        }
+
+        // AI Extractor Tool Functions
         async function runAIExtractor() {
             const rawText = document.getElementById('ai-raw-text').value;
             if(!rawText.trim()) { showToast("Please paste text first.", "error"); return; }
             const btn = document.getElementById('btn-extract'), btnText = document.getElementById('btn-extract-text');
-            btn.disabled = true; btn.classList.add('opacity-75'); btnText.innerHTML = '<span class="spinner mr-2"></span> Extracting...';
-            const apiKey = document.getElementById('gemini-api-key').value;
+            btn.disabled = true; btn.classList.add('opacity-75'); btnText.innerHTML = '<span class="spinner mr-2"></span> Extracting JSON...';
+            
+            const prompt = `You are an expert HR and alumni profile data parser. Extract structured details from this text and output ONLY a valid JSON object without markdown formatting or codeblocks:
+            {
+              "name": "Full Name",
+              "batch": 2018,
+              "company": "Company Name",
+              "role": "Current Designation / Job Title",
+              "sector": "Industry Sector (e.g. FMCG, Pharma, EPC, Oil & Gas)",
+              "location": "City, Country",
+              "linkedInUrl": "LinkedIn URL if present, else empty string"
+            }
+            Raw text: "${rawText.replace(/"/g, "'")}"`;
+
             try {
-                let resText = apiKey ? await fetchGeminiAPI(`Extract into JSON: "name","batch"(int),"company","role","sector","location". Raw: "${rawText}"`, apiKey) 
-                                     : (await new Promise(r => setTimeout(r, 1500)), `{\n  "name": "Generated Demo Name",\n  "company": "Tata Chemicals",\n  "role": "Process Engineer"\n}`);
-                showAIOutput("JSON Extracted Data:\n\n" + resText);
-            } catch(e) { showToast("AI Failed", "error"); showAIOutput("Error: " + e.message); } 
-            finally { btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Extract Data'; }
+                const resText = await callGeminiAPI(prompt);
+                showAIOutput("JSON Extracted Profile Data:\n\n" + resText);
+                showToast("Profile parsed successfully!", "success");
+            } catch(e) { 
+                console.error(e);
+                showToast("AI Extraction Failed", "error"); 
+                showAIOutput("Error: " + e.message); 
+            } finally { 
+                btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Extract JSON Data'; 
+            }
         }
 
         async function runAIGenerator() {
             const target = document.getElementById('ai-target-name').value, purpose = document.getElementById('ai-purpose').value;
-            if(!target || !purpose) { showToast("Provide target and purpose.", "error"); return; }
+            const type = document.getElementById('ai-outreach-type').value;
+            if(!target || !purpose) { showToast("Provide target alumnus name and purpose.", "error"); return; }
             const btn = document.getElementById('btn-generate'), btnText = document.getElementById('btn-generate-text');
             btn.disabled = true; btn.classList.add('opacity-75'); btnText.innerHTML = '<span class="spinner mr-2"></span> Generating...';
-            const apiKey = document.getElementById('gemini-api-key').value;
+            
+            let prompt = "";
+            if(type === 'linkedin') {
+                prompt = `Write a polite LinkedIn connection request message (STRICTLY UNDER 280 CHARACTERS) from a current Biochemical Engineering student at HBTU Kanpur to an alumnus named ${target}. Goal: ${purpose}. Mention HBTU connection.`;
+            } else {
+                prompt = `Write a professional outreach email to HBTU biochemical engineering alumnus ${target}. Purpose: ${purpose}. Include Subject line and polite greeting/body.`;
+            }
+
             try {
-                let resText = apiKey ? await fetchGeminiAPI(`Write professional outreach email to HBTU biochemical alumni ${target}. Purpose: ${purpose}. Keep it concise.`, apiKey)
-                                     : (await new Promise(r => setTimeout(r, 1500)), `Subject: HBTU Connection: ${purpose}\n\nDear ${target},\n\nI hope this email finds you well. I am writing to you as a fellow HBTU Biochemical Engineering alumnus regarding ${purpose}. I would love to connect and learn from your experience in the industry.\n\nBest Regards,\nFellow Alumnus`);
-                showAIOutput("Generated Email Draft:\n\n" + resText);
-            } catch(e) { showToast("AI Failed", "error"); showAIOutput("Error: " + e.message); } 
-            finally { btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Generate Email'; }
+                const resText = await callGeminiAPI(prompt);
+                showAIOutput("Generated Outreach Draft:\n\n" + resText);
+                showToast("Outreach generated!", "success");
+            } catch(e) { 
+                console.error(e);
+                showToast("AI Generation Failed", "error"); 
+                showAIOutput("Error: " + e.message); 
+            } finally { 
+                btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Generate Message'; 
+            }
         }
 
+        // LinkedIn Parser Modal Open/Close & Handling
+        function openParserModal() {
+            const modal = document.getElementById('linkedInParserModal'), content = document.getElementById('linkedInParserModalContent');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.getElementById('modalRawProfileInput').value = '';
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+
+        function closeParserModal() {
+            const modal = document.getElementById('linkedInParserModal'), content = document.getElementById('linkedInParserModalContent');
+            modal.classList.add('opacity-0'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        async function handleModalProfileExtraction() {
+            const rawText = document.getElementById('modalRawProfileInput').value;
+            if(!rawText.trim()) return showToast("Please paste profile text first.", "error");
+
+            const btn = document.getElementById('modalExtractBtn'), btnText = document.getElementById('modalExtractBtnText');
+            btn.disabled = true; btn.classList.add('opacity-75'); btnText.innerHTML = '<span class="spinner mr-2"></span> Parsing & Importing...';
+
+            const prompt = `Extract structured alumnus information from the following text. Return ONLY a valid raw JSON object with NO markdown formatting, NO markdown codeblocks:
+            {
+              "name": "Full Name",
+              "batch": 2018,
+              "company": "Company Name",
+              "role": "Current Designation",
+              "sector": "Industry Sector",
+              "location": "City, Country",
+              "linkedInUrl": "Full LinkedIn URL if present, else empty string"
+            }
+            Profile Text:
+            """
+            ${rawText.replace(/"/g, "'")}
+            """`;
+
+            try {
+                const rawResult = await callGeminiAPI(prompt);
+                const cleanJsonText = rawResult.replace(/```json/g, '').replace(/```/g, '').trim();
+                const parsed = JSON.parse(cleanJsonText);
+
+                if(!parsed.name || !parsed.company) throw new Error("Parsed JSON missing required fields.");
+
+                const newAlumnus = {
+                    id: crypto.randomUUID(),
+                    name: parsed.name,
+                    batch: parseInt(parsed.batch) || 2020,
+                    company: parsed.company,
+                    role: parsed.role || "Biochemical Engineer",
+                    sector: parsed.sector || getSectorFromCompany(parsed.company),
+                    location: parsed.location || "Kanpur",
+                    linkedInUrl: parsed.linkedInUrl || ""
+                };
+
+                alumniData.unshift(newAlumnus);
+                saveToLocal(); populateFilterDropdowns(); handleFilters(); updateDashboardStats();
+                closeParserModal();
+                showToast(`Successfully imported profile for ${parsed.name}!`, "success");
+            } catch(error) {
+                console.error(error);
+                showToast("Failed to parse profile automatically. Please try again or add manually.", "error");
+            } finally {
+                btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Extract & Import Record';
+            }
+        }
+
+        // Outreach Note Quick Modal
+        function openOutreachModal(id) {
+            const item = alumniData.find(a => a.id === id); if (!item) return;
+            currentOutreachTarget = item;
+            document.getElementById('outreachTargetInfo').innerText = item.name + ` (Batch ${item.batch})`;
+            document.getElementById('outreachTargetSub').innerText = `${item.role} at ${item.company}`;
+            document.getElementById('outreachNoteResultContainer').classList.add('hidden');
+            
+            const modal = document.getElementById('linkedInOutreachModal'), content = document.getElementById('linkedInOutreachModalContent');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+
+        function closeOutreachModal() {
+            const modal = document.getElementById('linkedInOutreachModal'), content = document.getElementById('linkedInOutreachModalContent');
+            modal.classList.add('opacity-0'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        async function generateModalOutreachNote() {
+            if(!currentOutreachTarget) return;
+            const goal = document.getElementById('modalOutreachGoal').value;
+            const btn = document.getElementById('btnGenerateModalNote'), btnText = document.getElementById('btnGenerateModalNoteText');
+            btn.disabled = true; btn.classList.add('opacity-75'); btnText.innerHTML = '<span class="spinner mr-2"></span> Generating...';
+
+            const prompt = `Write a polite LinkedIn connection request note (STRICTLY UNDER 280 CHARACTERS) from a current Biochemical Engineering student at HBTU Kanpur to an alumnus.
+            Alumnus: ${currentOutreachTarget.name}, ${currentOutreachTarget.role} at ${currentOutreachTarget.company}.
+            Goal: ${goal}. Mention HBTU connection.`;
+
+            try {
+                const note = await callGeminiAPI(prompt);
+                document.getElementById('outreachNoteResult').value = note.trim();
+                document.getElementById('outreachNoteResultContainer').classList.remove('hidden');
+            } catch(e) {
+                console.error(e);
+                showToast("Failed to generate note", "error");
+            } finally {
+                btn.disabled = false; btn.classList.remove('opacity-75'); btnText.innerHTML = 'Generate Connection Note';
+            }
+        }
+
+        // Apollo Contact Enrichment Functions
         function openEnrichModal(id) {
             const item = alumniData.find(a => a.id === id); if (!item) return;
             document.getElementById('enrich-target-name').innerText = item.name;
@@ -844,8 +1127,9 @@
         }
 
         function copyToClip(elementId) {
-            const text = document.getElementById(elementId).innerText;
-            if(text === 'searching...' || text.includes('Error')) return;
+            const elem = document.getElementById(elementId);
+            const text = elem.value || elem.innerText;
+            if(!text || text === 'searching...' || text.includes('Error')) return;
             if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => showToast("Copied!", "success"));
             else {
                 const textArea = document.createElement("textarea"); textArea.value = text;
